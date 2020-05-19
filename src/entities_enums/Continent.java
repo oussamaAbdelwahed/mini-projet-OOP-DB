@@ -6,4 +6,5 @@ public enum Continent {
 	AFR,
 	ASI,
 	AUS
+	
 }

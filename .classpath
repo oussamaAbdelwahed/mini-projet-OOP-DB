@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaFX11"/>
+	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
+	<classpathentry kind="lib" path="/home/oussama/java-libs/fontawesomefx-8.1.jar"/>
+	<classpathentry kind="lib" path="/home/oussama/java-libs/TUTO-DASH-LIBS/jfoenix-1.0.0.jar"/>
+	<classpathentry kind="lib" path="/media/oussama/DEV/STUDY/ISI/1_ING/SEM_2/MINI_PROJ_OBDB/mini-projet-OOP-DB/Lib/mysql-connector-java-8.0.19.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

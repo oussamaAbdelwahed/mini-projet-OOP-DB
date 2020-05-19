@@ -1,5 +1,6 @@
 package entities;
 
+
 import entities_enums.Continent;
 
 public class Address {
@@ -12,7 +13,23 @@ public class Address {
 	 private int zipCode;
 	 
 	 public Address() {}
-
+	 public Address(Continent continent,String country,String state,String city,String street,int zipCode) {
+		 this.continent=continent;
+		 this.country=country;
+		 this.state=state;
+		 this.city=city;
+		 this.street=street;
+		 this.zipCode=zipCode;
+	 }
+	 public Address(Address a) {
+		 	this.id=a.id;
+	    	this.continent=a.continent;
+	    	this.country=a.country;
+	    	this.state=a.state;
+	    	this.city=a.city;
+	    	this.street=a.street;
+	    	this.zipCode=a.zipCode;
+	}
 	public long getId() {
 		return id;
 	}
@@ -68,4 +85,9 @@ public class Address {
 	public void setZipCode(int zipCode) {
 		this.zipCode = zipCode;
 	}
+	public void showAdress() {
+		System.out.println("continent :"+this.continent+"\ncountry : "+this.country+"\nstate : "+this.state+"\ncity : "+this.city+"\nstreet : "+this.street+"\nzipCode : "+this.zipCode);
+	}
+	
+	
 }
