@@ -50,4 +50,5 @@ public Client updateEntities() {
 	return (Client)DaoPersonTable.updatePersonDatabase(this);
 	
 }
+
 }

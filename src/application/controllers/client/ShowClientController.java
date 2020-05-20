@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 import DAO.DaoClientTable;
 import DAO.DaoPersonTable;
+import application.controllers.UpdatePersonCredentialsController;
 import application.controllers.counter.OpenAccountController;
 import application.helpers.FxmlLoader;
 import entities.Address;
@@ -73,9 +74,30 @@ public class ShowClientController implements Initializable{
 		}
 	}
 	
+	
 	public void onEditBtnClicked(MouseEvent e) {
 		message.setVisible(false);
+		FXMLLoader loader = new FxmlLoader().getPage("updatePersonCredentials");
+		try {
+			Pane p = loader.load();
+			UpdatePersonCredentialsController c = loader.getController();
+			c.setUserId(this.clientId);
+		
+		    Scene scene = parentOne.getScene();
+		    
+		    ScrollPane  scrollPane = (ScrollPane)scene.lookup("#displayTarget");
+		    Label l  = (Label)scene.lookup("#diplayTargetHeaderTitle");
+		    l.setText("Modification");
+		    if(scrollPane != null) {
+		    	  scrollPane.setContent(p);
+		    }else {
+		    	System.out.println("Merde unfound scrollpane");
+		    }
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
+	
 
 	public void onDeleteBtnClicked(MouseEvent e) {
 		message.setVisible(false);

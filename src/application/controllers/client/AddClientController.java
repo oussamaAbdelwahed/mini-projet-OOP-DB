@@ -239,7 +239,7 @@ public class AddClientController implements Initializable {
 	    		   adr.setContinent(Continent.AUS);
 			   break;	    	 
 			  }
-	    	  adr.setState(etatVal);adr.setCountry(paysVal);adr.setCity(villeVal);adr.setStreet(rueVal);adr.setZipCode(codePostaleVal);
+	    	  adr.setState(paysVal);adr.setCountry(etatVal);adr.setCity(villeVal);adr.setStreet(rueVal);adr.setZipCode(codePostaleVal);
 	    	  Card card = new Card();
 	    	  
 	    	  Utilities utils = new Utilities();

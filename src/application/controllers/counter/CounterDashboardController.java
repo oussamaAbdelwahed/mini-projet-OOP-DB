@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import application.controllers.DashboardInterface;
+import application.controllers.UpdatePersonCredentialsController;
 import application.controllers.client.AddClientController;
 import application.controllers.client.ShowClientController;
 import application.helpers.FxmlLoader;
@@ -33,7 +34,7 @@ import javafx.fxml.FXMLLoader;
 
 public class CounterDashboardController implements Initializable,DashboardInterface {
     @FXML
-    HBox ouvrirCompte,listerComptes,fermerCompte,ajouterClient,listerClients,radierClient;
+    HBox listerComptes,ajouterClient,listerClients;
     
     @FXML
     HBox profile,deconnexion;
@@ -62,13 +63,13 @@ public class CounterDashboardController implements Initializable,DashboardInterf
    
  
     
-    public void onOuvrirCompteClick(MouseEvent event) throws IOException {
+   /* public void onOuvrirCompteClick(MouseEvent event) throws IOException {
     	FXMLLoader l= loader.getPage("account/openAccount");
 		Pane p = l.load();
     	
     	displayTarget.setContent(p);
     	diplayTargetHeaderTitle.setText("Ouvrir un nouveau compte");
-    }
+    }*/
     
     public void onListerComptesClick(MouseEvent event) throws IOException {
     	FXMLLoader l= loader.getPage("account/listAccounts");
@@ -78,13 +79,13 @@ public class CounterDashboardController implements Initializable,DashboardInterf
     	diplayTargetHeaderTitle.setText("Lister les comptes");
     }
     
-    public void onFermerCompteClick(MouseEvent event) throws IOException {
+    /*public void onFermerCompteClick(MouseEvent event) throws IOException {
     	FXMLLoader l= loader.getPage("account/closeAccount");
 		Pane p = l.load();
   
     	displayTarget.setContent(p);
     	diplayTargetHeaderTitle.setText("Fermer un compte");
-    }
+    }*/
     
    
     
@@ -112,13 +113,13 @@ public class CounterDashboardController implements Initializable,DashboardInterf
      	diplayTargetHeaderTitle.setText("Lister les clients");
     }
     
-    public void onRadierClientClick(MouseEvent event) throws IOException {
+   /* public void onRadierClientClick(MouseEvent event) throws IOException {
     	FXMLLoader l= loader.getPage("client/deleteClient");
 		Pane p = l.load();
     	
     	displayTarget.setContent(p);
     	diplayTargetHeaderTitle.setText("Radier un client");
-    }
+    }*/
     
  
     
@@ -178,11 +179,14 @@ public class CounterDashboardController implements Initializable,DashboardInterf
     
     
     public void onProfileClick(MouseEvent event) throws IOException {
-    	FXMLLoader l= loader.getPage("editProfile");
+    	FXMLLoader l = loader.getPage("updatePersonCredentials");
+
 		Pane p = l.load();
-    
-    	displayTarget.setContent(p);
-    	diplayTargetHeaderTitle.setText("Modifier le profile");
+	    UpdatePersonCredentialsController c = l.getController();
+		c.setUserId(this.counter.getId());
+		   
+	    displayTarget.setContent(p);
+        diplayTargetHeaderTitle.setText("Modifier le profile");
     }
     
     
@@ -200,7 +204,6 @@ public class CounterDashboardController implements Initializable,DashboardInterf
 			stage.setTitle("interface de connexion");
 			stage.show();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	 
     }
