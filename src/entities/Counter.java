@@ -68,13 +68,6 @@ public class Counter extends Person {
 		return true;
 	}
 	
-	public boolean openAccount(Account c) {
-		return true;
-	}
-	
-	public boolean closeAccount(Account c) {
-		return true;
-	}
 	// DAO FUNCTIONS:
 	
 	public Client insertClientIntoDatabase(Client c,Account cmpt) {
@@ -89,7 +82,6 @@ public class Counter extends Person {
 	public boolean TransactionBeetweenAccounts(long idSource,long idDestinataire, double amount,double threshhold) {
 		return DaoAccountTable.TransactionFromAccounts(idSource, idDestinataire, amount, threshhold);
 	}
-	
 	public Counter updateEntities() {
 		 return (Counter)DaoPersonTable.updatePersonDatabase(this);
 	}
@@ -99,7 +91,4 @@ public class Counter extends Person {
 	public boolean closeAccount(Long Id) {
 		return DaoAccountTable.deleteAccount(Id);
 	}
-	
-	
-	
 }

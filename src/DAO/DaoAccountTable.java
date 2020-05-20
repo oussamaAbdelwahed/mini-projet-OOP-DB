@@ -3,6 +3,9 @@ import DBConnection.DBConnection;
 import entities.Client;
 import entities.Address;
 import entities.Account;
+import entities.Person;
+import entities.Counter;
+import entities.Card;
 import entities.SavingAccount;
 import entities.CurrentAccount;
 import entities_enums.*;
@@ -114,13 +117,12 @@ public class DaoAccountTable {
 	}
 	public static Account InsertAccountSeperatly(Account compte) {
 		try {
-			PreparedStatement myStmt = DBConnection.getPreparedStatement("insert into carte (numero,codeInternet,codeDab,valableJusqua) values (?,?,?,?)");
-			myStmt.setLong(1,compte.getCard().getConfCode());
-			myStmt.setInt(2,compte.getCard().getInternetCode());
-			myStmt.setInt(3,compte.getCard().getDabCode());
-			myStmt.setTimestamp(4,new java.sql.Timestamp(compte.getCard().getExpirigDate().getTime()));
+			PreparedStatement myStmt = DBConnection.getPreparedStatementWithReturnedKey("insert into carte (codeInternet,codeDab,valableJusqua) values (?,?,?,?)");
+			myStmt.setLong(1,compte.getCard().getInternetCode());
+			myStmt.setLong(2,compte.getCard().getDabCode());
+			myStmt.setTimestamp(3,new java.sql.Timestamp(compte.getCard().getExpirigDate().getTime()));
 			int resCard = myStmt.executeUpdate();
-			
+			long cardId= DBConnection.getKey(myStmt);
 			PreparedStatement myStmt1 = DBConnection.getPreparedStatementWithReturnedKey("insert into compte (solde,dateCreation,seuil,estValable,TYPE,client,guichetier,carte) values (?,?,?,?,?,?,?,?)");
 			myStmt1.setDouble(1,compte.getMoney());
 			myStmt1.setTimestamp(2,new java.sql.Timestamp(new java.util.Date().getTime()));
@@ -134,10 +136,11 @@ public class DaoAccountTable {
 			}
 			myStmt1.setLong(6,compte.getOwner().getId());
 			myStmt1.setLong(7,compte.getCreatedBy().getId());
-			myStmt1.setDouble(8,compte.getCard().getConfCode());
+			myStmt1.setDouble(8,cardId);
 			int resAccount = myStmt1.executeUpdate();
 			long compteId = DBConnection.getKey(myStmt1);
 			if (resCard > 0 &&  resAccount > 0 ) {
+				compte.getCard().setConfCode(cardId);
 				compte.setId(compteId);
 				compte.getOwner().getAccounts().add(compte);
 				return compte;

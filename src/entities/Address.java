@@ -13,6 +13,9 @@ public class Address {
 	 private int zipCode;
 	 
 	 public Address() {}
+	 public Address(Long id) {
+		 this.id=id;
+	 }
 	 public Address(Continent continent,String country,String state,String city,String street,int zipCode) {
 		 this.continent=continent;
 		 this.country=country;

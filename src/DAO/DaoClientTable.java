@@ -71,7 +71,8 @@ public class DaoClientTable {
 			long compteId = DBConnection.getKey(myStmt4);
 			if(res1>0 && res2>0 && res3>0 && res4>0) {
 				c.setId(clientId);
-				c.setId(clientId);
+				compte.setId(compteId);
+				compte.getCard().setConfCode(cardId);
 				List<Account> accounts = new LinkedList<>();
 				accounts.add(compte);
 				c.setAccounts(accounts);
