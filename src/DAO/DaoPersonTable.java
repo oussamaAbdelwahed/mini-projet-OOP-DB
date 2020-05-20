@@ -77,8 +77,10 @@ public class DaoPersonTable {
 	}
 	
 	
+	@SuppressWarnings("finally")
 	public static Person updatePersonDatabase(Person person) {
 		PreparedStatement myUpdateStmt = null ;
+		PreparedStatement myUpdateStmtforadresse = null ;
 		Person returnedPerson =null;
 		try {
 			if (person instanceof Client) {
@@ -96,7 +98,17 @@ public class DaoPersonTable {
 			 myUpdateStmt.setString(9,C.getCivilState().name());
 			 myUpdateStmt.setLong(10,C.getId());
 			 int res = myUpdateStmt.executeUpdate();
-			 if(res>0) {
+			 myUpdateStmtforadresse=DBConnection.getPreparedStatement("update adresse set continent= ?,pays= ?,gouvernorat= ?,ville= ?,rue= ?,codePostal=?,"
+						+ "where id=?");
+			 myUpdateStmtforadresse.setString(1, C.getAddress().getContinent().name());
+			 myUpdateStmtforadresse.setString(2, C.getAddress().getCountry());
+			 myUpdateStmtforadresse.setString(3, C.getAddress().getState());
+			 myUpdateStmtforadresse.setString(4, C.getAddress().getCity());
+			 myUpdateStmtforadresse.setString(5, C.getAddress().getStreet());
+			 myUpdateStmtforadresse.setInt(6, C.getAddress().getZipCode());
+			 myUpdateStmtforadresse.setLong(7, C.getAddress().getId());
+			 int resAd = myUpdateStmtforadresse.executeUpdate();
+			 if(res>0 && resAd>0) {
 				 returnedPerson=C;
 			 }
 			}
@@ -117,7 +129,17 @@ public class DaoPersonTable {
 				 myUpdateStmt.setTimestamp(11,new java.sql.Timestamp(G.getHiringDate().getTime()));
 				 myUpdateStmt.setLong(12,G.getId());
 				 int res = myUpdateStmt.executeUpdate();
-				 if(res>0) {
+				 myUpdateStmtforadresse=DBConnection.getPreparedStatement("update adresse set continent= ?,pays= ?,gouvernorat= ?,ville= ?,rue= ?,codePostal=?,"
+							+ "where id=?");
+				 myUpdateStmtforadresse.setString(1, G.getAddress().getContinent().name());
+				 myUpdateStmtforadresse.setString(2, G.getAddress().getCountry());
+				 myUpdateStmtforadresse.setString(3, G.getAddress().getState());
+				 myUpdateStmtforadresse.setString(4, G.getAddress().getCity());
+				 myUpdateStmtforadresse.setString(5, G.getAddress().getStreet());
+				 myUpdateStmtforadresse.setInt(6, G.getAddress().getZipCode());
+				 myUpdateStmtforadresse.setLong(7, G.getAddress().getId());
+				 int resAd = myUpdateStmtforadresse.executeUpdate();
+				 if(res>0 && resAd>0) {
 					returnedPerson=G;
 				 }
 			}

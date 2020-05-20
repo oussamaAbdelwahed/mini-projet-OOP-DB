@@ -93,7 +93,12 @@ public class Counter extends Person {
 	public Counter updateEntities() {
 		 return (Counter)DaoPersonTable.updatePersonDatabase(this);
 	}
-
+	public Account openAccount(Account c) {
+		return DaoAccountTable.InsertAccountSeperatly(c);
+	}
+	public boolean closeAccount(Long Id) {
+		return DaoAccountTable.deleteAccount(Id);
+	}
 	
 	
 	

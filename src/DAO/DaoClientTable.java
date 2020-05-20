@@ -68,7 +68,9 @@ public class DaoClientTable {
 			myStmt4.setLong(7,counterId);
 			myStmt4.setLong(8,cardId);
 			int res4 = myStmt4.executeUpdate();
+			long compteId = DBConnection.getKey(myStmt4);
 			if(res1>0 && res2>0 && res3>0 && res4>0) {
+				c.setId(clientId);
 				c.setId(clientId);
 				List<Account> accounts = new LinkedList<>();
 				accounts.add(compte);
@@ -103,142 +105,6 @@ public class DaoClientTable {
 			 return false ;
 		 }
 		
-	}
-	
-	public static boolean UpdateClientEmail(Client C , String newValue) {
-		try {
-			PreparedStatement myUpdateStmt =  DBConnection.getPreparedStatement("update personne set email= ? where id=? and TYPE=?");
-			myUpdateStmt.setString(1,newValue);
-			myUpdateStmt.setLong(2,C.getId());
-			myUpdateStmt.setString(3,Enum.valueOf(TYPE.class,"CLIENT").name());
-			int res =myUpdateStmt.executeUpdate();
-			if (res>0) return true ;
-			else return false ;
-		}
-		catch (Exception exc) {
-			 exc.printStackTrace();
-			 return false ;
-		 }
-	}
-	public static boolean UpdateClientPassword(Client C , String newValue) {
-		try {
-			PreparedStatement myUpdateStmt =  DBConnection.getPreparedStatement("update personne set password= ? where id=? and TYPE=?");
-			myUpdateStmt.setString(1,newValue);
-			myUpdateStmt.setLong(2,C.getId());
-			myUpdateStmt.setString(3,Enum.valueOf(TYPE.class,"CLIENT").name());
-			int res =myUpdateStmt.executeUpdate();
-			if (res>0) return true ;
-			else return false ;
-		}
-		catch (Exception exc) {
-			 exc.printStackTrace();
-			 return false ;
-		 }
-	}
-	public static boolean UpdateClientCin(Client C , int newValue) {
-		try {
-			PreparedStatement myUpdateStmt =  DBConnection.getPreparedStatement("update personne set cin= ? where id=? and TYPE=?");
-			myUpdateStmt.setInt(1,newValue);
-			myUpdateStmt.setLong(2,C.getId());
-			myUpdateStmt.setString(3,Enum.valueOf(TYPE.class,"CLIENT").name());
-			int res =myUpdateStmt.executeUpdate();
-			if (res>0) return true ;
-			else return false ;
-		}
-		catch (Exception exc) {
-			 exc.printStackTrace();
-			 return false ;
-		 }
-	}
-	public static boolean UpdateClientLastName(Client C , String newValue) {
-		try {
-			PreparedStatement myUpdateStmt =  DBConnection.getPreparedStatement("update personne set nom= ? where id=? and TYPE=?");
-			myUpdateStmt.setString(1,newValue);
-			myUpdateStmt.setLong(2,C.getId());
-			myUpdateStmt.setString(3,Enum.valueOf(TYPE.class,"CLIENT").name());
-			int res =myUpdateStmt.executeUpdate();
-			if (res>0) return true ;
-			else return false ;
-		}
-		catch (Exception exc) {
-			 exc.printStackTrace();
-			 return false ;
-		 }
-	}
-	public static boolean UpdateClientFirstName(Client C , String newValue) {
-		try {
-			PreparedStatement myUpdateStmt =  DBConnection.getPreparedStatement("update personne set prenom= ? where id=? and TYPE=?");
-			myUpdateStmt.setString(1,newValue);
-			myUpdateStmt.setLong(2,C.getId());
-			myUpdateStmt.setString(3,Enum.valueOf(TYPE.class,"CLIENT").name());
-			int res =myUpdateStmt.executeUpdate();
-			if (res>0) return true ;
-			else return false ;
-		}
-		catch (Exception exc) {
-			 exc.printStackTrace();
-			 return false ;
-		 }
-	}
-	public static boolean UpdateClientBirthdate(Client C , Date newValue) {
-		try {
-			PreparedStatement myUpdateStmt =  DBConnection.getPreparedStatement("update personne set prenom= ? where id=? and TYPE=?");
-			myUpdateStmt.setTimestamp(1,new java.sql.Timestamp(newValue.getTime()));
-			myUpdateStmt.setLong(2,C.getId());
-			myUpdateStmt.setString(3,Enum.valueOf(TYPE.class,"CLIENT").name());
-			int res =myUpdateStmt.executeUpdate();
-			if (res>0) return true ;
-			else return false ;
-		}
-		catch (Exception exc) {
-			 exc.printStackTrace();
-			 return false ;
-		 }
-	}
-	public static boolean UpdateClientTel(Client C , String newValue) {
-		try {
-			PreparedStatement myUpdateStmt =  DBConnection.getPreparedStatement("update personne set tel= ? where id=? and TYPE=?");
-			myUpdateStmt.setString(1,newValue);
-			myUpdateStmt.setLong(2,C.getId());
-			myUpdateStmt.setString(3,Enum.valueOf(TYPE.class,"CLIENT").name());
-			int res =myUpdateStmt.executeUpdate();
-			if (res>0) return true ;
-			else return false ;
-		}
-		catch (Exception exc) {
-			 exc.printStackTrace();
-			 return false ;
-		 }
-	}
-	public static boolean UpdateClientSex(Client C , String newValue) {
-		try {
-			PreparedStatement myUpdateStmt =  DBConnection.getPreparedStatement("update personne set sex= ? where id=? and TYPE=?");
-			myUpdateStmt.setString(1,Enum.valueOf(Sex.class,newValue).name());
-			myUpdateStmt.setLong(2,C.getId());
-			myUpdateStmt.setString(3,Enum.valueOf(TYPE.class,"CLIENT").name());
-			int res =myUpdateStmt.executeUpdate();
-			if (res>0) return true ;
-			else return false ;
-		}
-		catch (Exception exc) {
-			 exc.printStackTrace();
-			 return false ;
-		 }
-	}
-	public static boolean UpdateClientEtatCivil(Client C , String newValue) {
-		try {
-			PreparedStatement myUpdateStmt =  DBConnection.getPreparedStatement("update personne set etatCivil= ? where id=? and TYPE=?");
-			myUpdateStmt.setString(1,Enum.valueOf(CivilState.class,newValue).name());
-			myUpdateStmt.setLong(2,C.getId());
-			myUpdateStmt.setString(3,Enum.valueOf(TYPE.class,"CLIENT").name());
-			int res =myUpdateStmt.executeUpdate();
-			if (res>0) return true ;
-			else return false ;
-		}
-		catch (Exception exc) {
-			 exc.printStackTrace();
-			 return false ;
-		 }
 	}
 	
 	

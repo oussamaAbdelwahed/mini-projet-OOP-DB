@@ -3,6 +3,27 @@ package DAO;
 
 
 public class DBUtilities {
+	public static StringBuilder prepareForSelectFullAccountDetails(String parametersList) {
+		StringBuilder sb= new StringBuilder();
+		if(parametersList.equals("*")) {
+			sb.append("select a.*,cl.*,g.*,cd.* from compte a join personne cl on a.client = cl.id"
+					+ " join personne g on a.guichetier =g.id"
+					+ " join carte cd on a.carte=cd.numero");
+			
+		}
+		else {
+			sb.append("select ");
+			String [] tmp = parametersList.split(",");
+			for(String s : tmp) {
+				sb.append("a."+s+",");
+			}
+			sb.append("cl.*,");
+			sb.append("g.*,");
+			sb.append("cd.*");
+			sb.append(" from compte a join personne cl on a.client = cl.id join personne g on a.guichetier =g.id join carte cd on a.carte=cd.numero");
+		}
+		 return sb;
+	}
 	public static StringBuilder prepareForSelectPersonAddress(String parametersList) {
 		StringBuilder sb= new StringBuilder();
 		if(parametersList.equals("*")) {

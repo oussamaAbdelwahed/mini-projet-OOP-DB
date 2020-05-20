@@ -66,4 +66,102 @@ public class DaoAccountTable {
 			 return false ;
 		 }
 	}
+	@SuppressWarnings("finally")
+	public static Account getAccountById(String parametersList , Long id) {
+		StringBuilder sb = DBUtilities.prepareForSelectFullAccountDetails(parametersList);
+		sb.append(" where a.id =  ?");
+		Account account = null ;
+		try {
+			 PreparedStatement myStmt = DBConnection.getPreparedStatement(sb.toString());
+			   myStmt.setLong(1, id);
+			   ResultSet res= myStmt.executeQuery();
+			   while (res.next()) {
+				   Address adresseClient = new Address(res.getLong("cl.address"));
+				   Person client = new Client(res.getInt("cl.cin"),res.getString("cl.email"),res.getString("cl.password")
+							,adresseClient,res.getString("cl.nom"),res.getString("cl.prenom"),res.getString("cl.tel"),new Date(res.getTimestamp("cl.dateNaiss").getTime())
+							,Enum.valueOf(CivilState.class, res.getString("cl.etatCivil")),Enum.valueOf(Sex.class,res.getString("cl.sex")));
+				   client.setId(res.getLong("cl.id"));
+		
+				   Address adresseCounter = new Address(res.getLong("g.address"));
+				   Person counter = new Counter(res.getInt("g.cin"),res.getString("g.email"),res.getString("g.password")
+							,adresseCounter,res.getString("g.nom"),res.getString("g.prenom"),res.getString("g.tel"),new Date(res.getTimestamp("g.dateNaiss").getTime())
+							,Enum.valueOf(CivilState.class, res.getString("g.etatCivil")),Enum.valueOf(Sex.class,res.getString("g.sex")),res.getDouble("g.salaire"),new Date(res.getTimestamp("g.dateEmbauche").getTime()),res.getLong("g.guichet"));
+				   counter.setId(res.getLong("g.id"));
+				   
+				   Card card = new Card(res.getLong("cd.numero"),res.getInt("cd.codeInternet"),res.getShort("cd.codeDab"),new Date(res.getTimestamp("cd.valableJusqua").getTime()));
+				   if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"COURANT").name()) && res.getInt("a.estValable")==1) {
+					   account = new CurrentAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
+							   ,res.getDouble("a.seuil"),client,counter,card);
+					   account.setId(res.getLong("a.id"));
+				   }
+				   else if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"EPARGNE").name()) && res.getInt("a.estValable")==1) {
+					   account = new SavingAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
+							   ,res.getDouble("a.seuil"),client,counter,card);
+					   account.setId(res.getLong("a.id"));
+				   }
+				   else {
+					   account = null;
+				   }
+				   
+			   }
+		}
+		catch (Exception exc) {
+			 exc.printStackTrace();
+		 }
+		finally {
+				return account ;
+		}
+	}
+	public static Account InsertAccountSeperatly(Account compte) {
+		try {
+			PreparedStatement myStmt = DBConnection.getPreparedStatement("insert into carte (numero,codeInternet,codeDab,valableJusqua) values (?,?,?,?)");
+			myStmt.setLong(1,compte.getCard().getConfCode());
+			myStmt.setInt(2,compte.getCard().getInternetCode());
+			myStmt.setInt(3,compte.getCard().getDabCode());
+			myStmt.setTimestamp(4,new java.sql.Timestamp(compte.getCard().getExpirigDate().getTime()));
+			int resCard = myStmt.executeUpdate();
+			
+			PreparedStatement myStmt1 = DBConnection.getPreparedStatementWithReturnedKey("insert into compte (solde,dateCreation,seuil,estValable,TYPE,client,guichetier,carte) values (?,?,?,?,?,?,?,?)");
+			myStmt1.setDouble(1,compte.getMoney());
+			myStmt1.setTimestamp(2,new java.sql.Timestamp(new java.util.Date().getTime()));
+			myStmt1.setDouble(3,compte.getThreshold());
+			myStmt1.setInt(4,1);
+			if(compte instanceof CurrentAccount) {
+				myStmt1.setString(5,Enum.valueOf(TYPE.class,"COURANT").name());
+			}
+			else {
+				myStmt1.setString(5,Enum.valueOf(TYPE.class,"EPARGNE").name());
+			}
+			myStmt1.setLong(6,compte.getOwner().getId());
+			myStmt1.setLong(7,compte.getCreatedBy().getId());
+			myStmt1.setDouble(8,compte.getCard().getConfCode());
+			int resAccount = myStmt1.executeUpdate();
+			long compteId = DBConnection.getKey(myStmt1);
+			if (resCard > 0 &&  resAccount > 0 ) {
+				compte.setId(compteId);
+				compte.getOwner().getAccounts().add(compte);
+				return compte;
+			}
+			else 
+				return null ;
+		}
+		catch (Exception exc) {
+			 exc.printStackTrace();
+			 return null ;
+		 }
+	}
+	public static boolean deleteAccount(long id) {
+		try {
+			PreparedStatement myStmt= DBConnection.getPreparedStatement("delete from compte where id=?");
+			myStmt.setLong(1,id);
+			int res = myStmt.executeUpdate();
+			if (res > 0) 
+				return true ;
+			else return false ;
+		}
+		catch (Exception exc) {
+			 exc.printStackTrace();
+			 return false ;
+		 }
+	}
 }
