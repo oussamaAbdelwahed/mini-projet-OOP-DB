@@ -1,5 +1,6 @@
 package application.controllers.counter;
 
+import java.io.IOException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -9,6 +10,8 @@ import java.util.ResourceBundle;
 
 import DAO.DaoAccountTable;
 import DAO.DaoClientTable;
+import application.controllers.client.ShowLastThreeOperations;
+import application.helpers.FxmlLoader;
 import entities.Account;
 import entities.Card;
 import entities.Client;
@@ -16,10 +19,16 @@ import entities.Counter;
 import entities.CurrentAccount;
 import entities.Person;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 
 public class ShowAccountController implements Initializable {
@@ -31,6 +40,9 @@ public class ShowAccountController implements Initializable {
 	private HBox  btnsContainer;
 	
 	private Long accountId;
+	
+	@FXML
+	private AnchorPane parentOne;
 	
 	public void setAccountId(Long id) {
 		btnsContainer.setVisible(true);
@@ -70,13 +82,27 @@ public class ShowAccountController implements Initializable {
 		this.accountId = id;
 	}
 	
-	public void onOpenAccountBtnClicked(MouseEvent e) {
-		
+	public void onShowLastOperationsBtnClicked(MouseEvent event) {
+		FXMLLoader loader = new FxmlLoader().getPage("client/showLastThreeOperations");
+		try {
+			Pane p = loader.load();
+			ShowLastThreeOperations c = loader.getController();
+			c.setAccountId(this.accountId);
+				
+		    Scene scene = parentOne.getScene();
+			ScrollPane  scrollPane = (ScrollPane)scene.lookup("#displayTarget");
+			Label l  = (Label)scene.lookup("#diplayTargetHeaderTitle");
+			l.setText("3 dernieres operations");
+	        if(scrollPane != null) {
+			   scrollPane.setContent(p);
+			}else {
+			   System.out.println("Merde unfound scrollpane");
+			}
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 	}
 	
-	/*public void onEditBtnClicked(MouseEvent e) {
-		
-	}*/
 
 	public void onDeleteBtnClicked(MouseEvent e) {
 		message.setVisible(false);
