@@ -1,6 +1,6 @@
 /DAO/
-/entities/
-/application/
 /DBConnection/
-/config.properties
+/application/
+/entities/
 /entities_enums/
+/CSS/

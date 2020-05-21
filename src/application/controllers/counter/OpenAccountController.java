@@ -5,7 +5,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.ResourceBundle;
 
+import DAO.DaoAccountTable;
+import application.helpers.Utilities;
 import entities.Account;
+import entities.Card;
+import entities.Client;
+import entities.Counter;
 import entities.CurrentAccount;
 import entities.SavingAccount;
 import javafx.fxml.FXML;
@@ -22,7 +27,7 @@ public class OpenAccountController implements Initializable{
 	private TextField somme;
 	
 	@FXML 
-	private Text sommeErr;
+	private Text sommeErr,message;
 	
 	@FXML
 	private Button submitBtn;
@@ -47,6 +52,7 @@ public class OpenAccountController implements Initializable{
 	
 	
 	public void onSubmit(MouseEvent event) {
+		sommeErr.setVisible(false);message.setVisible(false);
 		 Double sommeVal;
 		  try {
 			  sommeVal = Double.parseDouble(somme.getText());
@@ -55,20 +61,51 @@ public class OpenAccountController implements Initializable{
 				  sommeErr.setText("* valeur négative non alloué !");
 			  }else {
 			   Calendar cal = Calendar.getInstance();
-		   	   cal.setTime(new Date());
+			   cal.setTime(new Date());
+			   
+			   Date after ;
+		   	   
 			   Account c;
 			   RadioButton rb = (RadioButton)accountType.getSelectedToggle();
 			    if(rb==compteCourant) {
+			       after = Utilities.getDateAfterXDays(365*2);
 				   c = new CurrentAccount();
 				   c.setThreshold(Account.THRESHOLD_CURRENT_ACCOUNT);
 			    }else{
+			      after = Utilities.getDateAfterXDays(365*4);
 			      c = new SavingAccount();
 			      c.setThreshold(Account.THRESHOLD_SAVING_ACCOUNT);
 			    }
 			    c.setMoney(sommeVal);
 		    	c.setAvailable(true);
-		    	c.setClosingDate(cal.getTime());
+		    	c.setOpeningDate(cal.getTime());
+		    	c.setClosingDate(after);
 		    	
+		    	Client client = new Client();client.setId(this.clientId);
+		    	Counter counter = new Counter();counter.setId(this.counterId);
+		    	
+		    	
+		    	
+		    	Card card = new Card();
+		    	
+		    	Utilities utils = new Utilities();
+		    	card.setExpiringDate(after);
+		    	Long ret [] = utils.getCodesFromPropsFile();
+		    	if(ret != null) {
+		    	   card.setInternetCode(ret[0]);
+		    	   card.setDabCode(ret[1]);
+		    	}
+		    	c.setCard(card);
+		    	c.setCreatedBy(counter);
+		    	c.setOwner(client);
+		    	
+		    	c = DaoAccountTable.InsertAccountSeperatly(c);
+		    	message.setVisible(true);
+		    	if(c!=null) {
+		    		message.setText("compte inseré avec success");
+		    	}else {
+		    		message.setText("opération echoué, ressayer plus tard!");
+		    	}
 			  }
 		  }catch(NumberFormatException e) {
 			  e.printStackTrace();

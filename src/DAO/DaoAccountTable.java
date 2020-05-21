@@ -75,32 +75,47 @@ public class DaoAccountTable {
 		sb.append(" where a.id =  ?");
 		Account account = null ;
 		try {
+			 Address adresseClient,adresseCounter = null;
+			 Person client,counter = null;
+			 Card card = null;
 			 PreparedStatement myStmt = DBConnection.getPreparedStatement(sb.toString());
 			   myStmt.setLong(1, id);
 			   ResultSet res= myStmt.executeQuery();
 			   while (res.next()) {
-				   Address adresseClient = new Address(res.getLong("cl.address"));
-				   Person client = new Client(res.getInt("cl.cin"),res.getString("cl.email"),res.getString("cl.password")
+				    adresseClient = adresseCounter = null;
+				    client = counter = null;
+				    card = null;
+				   
+				   if(res.getLong("cl.id")>0) {
+				      adresseClient = new Address(res.getLong("cl.address"));
+				   
+				      client = new Client(res.getInt("cl.cin"),res.getString("cl.email"),res.getString("cl.password")
 							,adresseClient,res.getString("cl.nom"),res.getString("cl.prenom"),res.getString("cl.tel"),new Date(res.getTimestamp("cl.dateNaiss").getTime())
 							,Enum.valueOf(CivilState.class, res.getString("cl.etatCivil")),Enum.valueOf(Sex.class,res.getString("cl.sex")));
-				   client.setId(res.getLong("cl.id"));
-		
-				   Address adresseCounter = new Address(res.getLong("g.address"));
-				   Person counter = new Counter(res.getInt("g.cin"),res.getString("g.email"),res.getString("g.password")
+				     client.setId(res.getLong("cl.id"));
+				   }
+				   if(res.getLong("g.id")>0) {
+				     adresseCounter = new Address(res.getLong("g.address"));
+				     counter = new Counter(res.getInt("g.cin"),res.getString("g.email"),res.getString("g.password")
 							,adresseCounter,res.getString("g.nom"),res.getString("g.prenom"),res.getString("g.tel"),new Date(res.getTimestamp("g.dateNaiss").getTime())
 							,Enum.valueOf(CivilState.class, res.getString("g.etatCivil")),Enum.valueOf(Sex.class,res.getString("g.sex")),res.getDouble("g.salaire"),new Date(res.getTimestamp("g.dateEmbauche").getTime()),res.getLong("g.guichet"));
-				   counter.setId(res.getLong("g.id"));
+				    counter.setId(res.getLong("g.id"));
+				   }
+				   if(res.getLong("cd.numero")>0) {
+				    card = new Card(res.getLong("cd.numero"),res.getInt("cd.codeInternet"),res.getShort("cd.codeDab"),new Date(res.getTimestamp("cd.valableJusqua").getTime()));
+				   }
 				   
-				   Card card = new Card(res.getLong("cd.numero"),res.getInt("cd.codeInternet"),res.getShort("cd.codeDab"),new Date(res.getTimestamp("cd.valableJusqua").getTime()));
-				   if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"COURANT").name()) && res.getInt("a.estValable")==1) {
+				  if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"COURANT").name()) ) {//&& res.getInt("a.estValable")==1
 					   account = new CurrentAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
 							   ,res.getDouble("a.seuil"),client,counter,card);
 					   account.setId(res.getLong("a.id"));
+					   account.setAvailable(res.getInt("a.estValable")==1 ? true  : false);
 				   }
-				   else if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"EPARGNE").name()) && res.getInt("a.estValable")==1) {
+				   else if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"EPARGNE").name()) ) {//&& res.getInt("a.estValable")==1
 					   account = new SavingAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
 							   ,res.getDouble("a.seuil"),client,counter,card);
 					   account.setId(res.getLong("a.id"));
+					   account.setAvailable(res.getInt("a.estValable")==1 ? true  : false);
 				   }
 				   else {
 					   account = null;
@@ -117,13 +132,13 @@ public class DaoAccountTable {
 	}
 	public static Account InsertAccountSeperatly(Account compte) {
 		try {
-			PreparedStatement myStmt = DBConnection.getPreparedStatementWithReturnedKey("insert into carte (codeInternet,codeDab,valableJusqua) values (?,?,?,?)");
+			PreparedStatement myStmt = DBConnection.getPreparedStatementWithReturnedKey("insert into carte (codeInternet,codeDab,valableJusqua) values (?,?,?)");
 			myStmt.setLong(1,compte.getCard().getInternetCode());
 			myStmt.setLong(2,compte.getCard().getDabCode());
 			myStmt.setTimestamp(3,new java.sql.Timestamp(compte.getCard().getExpirigDate().getTime()));
 			int resCard = myStmt.executeUpdate();
 			long cardId= DBConnection.getKey(myStmt);
-			PreparedStatement myStmt1 = DBConnection.getPreparedStatementWithReturnedKey("insert into compte (solde,dateCreation,seuil,estValable,TYPE,client,guichetier,carte) values (?,?,?,?,?,?,?,?)");
+			PreparedStatement myStmt1 = DBConnection.getPreparedStatementWithReturnedKey("insert into compte (solde,dateCreation,seuil,estValable,TYPE,client,guichetier,carte,dateFermeture) values (?,?,?,?,?,?,?,?,?)");
 			myStmt1.setDouble(1,compte.getMoney());
 			myStmt1.setTimestamp(2,new java.sql.Timestamp(new java.util.Date().getTime()));
 			myStmt1.setDouble(3,compte.getThreshold());
@@ -137,6 +152,7 @@ public class DaoAccountTable {
 			myStmt1.setLong(6,compte.getOwner().getId());
 			myStmt1.setLong(7,compte.getCreatedBy().getId());
 			myStmt1.setDouble(8,cardId);
+			myStmt1.setTimestamp(9, new java.sql.Timestamp(compte.getClosingDate().getTime()));
 			int resAccount = myStmt1.executeUpdate();
 			long compteId = DBConnection.getKey(myStmt1);
 			if (resCard > 0 &&  resAccount > 0 ) {
@@ -147,12 +163,13 @@ public class DaoAccountTable {
 			}
 			else 
 				return null ;
-		}
-		catch (Exception exc) {
+		}catch (Exception exc) {
 			 exc.printStackTrace();
 			 return null ;
-		 }
+		}
 	}
+	
+	
 	public static boolean deleteAccount(long id) {
 		try {
 			PreparedStatement myStmt= DBConnection.getPreparedStatement("delete from compte where id=?");

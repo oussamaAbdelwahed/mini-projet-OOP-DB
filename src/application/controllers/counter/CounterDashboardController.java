@@ -125,11 +125,23 @@ public class CounterDashboardController implements Initializable,DashboardInterf
     
     public void onChercherCompteKeyPress(KeyEvent event) throws IOException {
     	if (event.getCode() == KeyCode.ENTER) {
-    		FXMLLoader l= loader.getPage("account/showAccount");
-   		    Pane p = l.load();
-    	  
-        	displayTarget.setContent(p);
-        	diplayTargetHeaderTitle.setText("Informations du compte");
+    		String input = chercherCompte.getText();
+    		if(input!=null && !input.equals("")) {
+    		  FXMLLoader l= loader.getPage("account/showAccount");
+   		      Pane p = l.load();
+   		      ShowAccountController c = l.getController();
+   		      Long id=null;
+   		      
+   		      try {
+    		   id = Long.parseLong(input);
+    		  }catch(NumberFormatException e) {
+    			 e.printStackTrace();
+    		  }finally {
+    			 c.setAccountId(id);
+    		  }
+        	  displayTarget.setContent(p);
+        	  diplayTargetHeaderTitle.setText("Informations du compte");
+    		}
     	}
     }
     

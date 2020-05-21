@@ -6,9 +6,9 @@ public class DBUtilities {
 	public static StringBuilder prepareForSelectFullAccountDetails(String parametersList) {
 		StringBuilder sb= new StringBuilder();
 		if(parametersList.equals("*")) {
-			sb.append("select a.*,cl.*,g.*,cd.* from compte a join personne cl on a.client = cl.id"
-					+ " join personne g on a.guichetier =g.id"
-					+ " join carte cd on a.carte=cd.numero");
+			sb.append("select a.*,cl.*,g.*,cd.* from compte a left join personne cl on a.client = cl.id"
+					+ " left join personne g on a.guichetier =g.id"
+					+ " left join carte cd on a.carte=cd.numero");
 			
 		}
 		else {
@@ -20,7 +20,7 @@ public class DBUtilities {
 			sb.append("cl.*,");
 			sb.append("g.*,");
 			sb.append("cd.*");
-			sb.append(" from compte a join personne cl on a.client = cl.id join personne g on a.guichetier =g.id join carte cd on a.carte=cd.numero");
+			sb.append(" from compte a left join personne cl on a.client = cl.id left join personne g on a.guichetier =g.id left join carte cd on a.carte=cd.numero");
 		}
 		 return sb;
 	}

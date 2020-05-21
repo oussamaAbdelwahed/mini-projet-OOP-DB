@@ -67,8 +67,6 @@ public class ShowClientController implements Initializable{
 		    }else {
 		    	System.out.println("Merde unfound scrollpane");
 		    }
-			
-		  
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}

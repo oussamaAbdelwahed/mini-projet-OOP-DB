@@ -45,6 +45,11 @@
             </Text>
             <Label layoutX="81.0" layoutY="184.0" text="*Somme" />
             <TextField fx:id="somme" layoutX="184.0" layoutY="168.0" prefHeight="48.0" prefWidth="299.0" promptText="somme d'argent" />
+            <Text fx:id="message" layoutX="204.0" layoutY="345.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" textAlignment="CENTER" wrappingWidth="219.7294921875">
+               <font>
+                  <Font size="17.0" />
+               </font>
+            </Text>
          </children>
       </Pane>
    </children>

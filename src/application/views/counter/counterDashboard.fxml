@@ -299,7 +299,7 @@
                   </HBox>
                </children>
             </Pane>
-            <ScrollPane fx:id="displayTarget" hbarPolicy="NEVER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="741.0" prefWidth="1001.0" style="-fx-background-color: white;" />
+            <ScrollPane fx:id="displayTarget" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="741.0" prefWidth="1001.0" style="-fx-background-color: white;" />
          </children></VBox>
    </children>
 </AnchorPane>
