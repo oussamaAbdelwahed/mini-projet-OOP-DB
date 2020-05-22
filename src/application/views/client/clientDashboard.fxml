@@ -71,28 +71,6 @@
                   <Insets top="10.0" />
                </VBox.margin>
             </HBox>
-            <HBox fx:id="ouvrirCompte" alignment="CENTER_LEFT" layoutX="10.0" layoutY="95.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onOuvrirCompteClick" prefHeight="40.0" prefWidth="300.0" styleClass="btns">
-               <children>
-                  <FontAwesomeIcon glyphStyle="-fx-fill:#FED350" glyphStyleClass="" iconName="PLUS" size="1.3em">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </FontAwesomeIcon>
-                  <Label prefHeight="20.0" prefWidth="132.0" text="Ouvrir Compte" textFill="#7c8184">
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin>
-                     <font>
-                        <Font name="Comfortaa Regular" size="15.0" />
-                     </font></Label>
-               </children>
-               <padding>
-                  <Insets left="10.0" />
-               </padding>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </HBox>
             <HBox fx:id="listerComptes" alignment="CENTER_LEFT" layoutX="10.0" layoutY="142.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onListerComptesClick" prefHeight="40.0" prefWidth="300.0" styleClass="btns">
                <children>
                   <FontAwesomeIcon glyphStyle="-fx-fill:#FED350" glyphStyleClass="" iconName="ARCHIVE" size="1.3em">
@@ -113,26 +91,6 @@
                   <Insets left="10.0" />
                </padding>
             </HBox>
-            <HBox fx:id="fermerCompte" alignment="CENTER_LEFT" layoutX="10.0" layoutY="182.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onFermerCompteClick" prefHeight="40.0" prefWidth="300.0" styleClass="btns">
-               <children>
-                  <FontAwesomeIcon glyphStyle="-fx-fill:#FED350" glyphStyleClass="" iconName="BAN" size="1.3em">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </FontAwesomeIcon>
-                  <Label prefHeight="20.0" prefWidth="132.0" text="Fermer Compte" textFill="#7c8184">
-                     <font>
-                        <Font name="Comfortaa Regular" size="15.0" />
-                     </font>
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin>
-                  </Label>
-               </children>
-               <padding>
-                  <Insets left="10.0" />
-               </padding>
-            </HBox>
             <Text fill="#f2eaea" layoutX="10.0" layoutY="186.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Transactions" textAlignment="CENTER" wrappingWidth="283.7294921875">
                <font>
                   <Font name="System Bold" size="17.0" />
@@ -141,26 +99,6 @@
                   <Insets bottom="10.0" top="40.0" />
                </VBox.margin>
             </Text>
-            <HBox fx:id="deposer" alignment="CENTER_LEFT" layoutX="10.0" layoutY="241.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onDeposerArgentClick" prefHeight="40.0" prefWidth="300.0" styleClass="btns">
-               <children>
-                  <FontAwesomeIcon glyphStyle="-fx-fill:#FED350" glyphStyleClass="" iconName="PLUS" size="1.3em" text="">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </FontAwesomeIcon>
-                  <Label prefHeight="20.0" prefWidth="132.0" text="Déposer argents" textFill="#7c8184">
-                     <font>
-                        <Font name="Comfortaa Regular" size="15.0" />
-                     </font>
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin>
-                  </Label>
-               </children>
-               <padding>
-                  <Insets left="10.0" />
-               </padding>
-            </HBox>
             <HBox fx:id="retirer" alignment="CENTER_LEFT" layoutX="10.0" layoutY="382.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onRetirerArgentClick" prefHeight="40.0" prefWidth="300.0" styleClass="btns">
                <children>
                   <FontAwesomeIcon glyphStyle="-fx-fill:#FED350" glyphStyleClass="" iconName="MINUS" size="1.3em">
