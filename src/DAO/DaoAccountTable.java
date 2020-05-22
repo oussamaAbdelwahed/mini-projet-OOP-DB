@@ -8,6 +8,7 @@ import entities.Counter;
 import entities.Card;
 import entities.SavingAccount;
 import entities.CurrentAccount;
+import entities.Operation;
 import entities_enums.*;
 
 import java.util.Date;
@@ -16,6 +17,46 @@ import java.util.List;
 import java.sql.*;
 
 public class DaoAccountTable {
+	public static List<Operation> getLastThreeOperationForAccount(long idAccount) {
+		LinkedList<Operation> L1 = new LinkedList<Operation>();
+		try {
+			PreparedStatement myStmt1 = DBConnection.getPreparedStatement("select op.*,cs.* from operation op join compte cs on op.compteSource = cs.id"
+					+ " where op.compteSource=? ORDER BY op.dateExec DESC LIMIT 3 ");
+			myStmt1.setLong(1, idAccount);
+			ResultSet res = myStmt1.executeQuery() ;
+			 while (res.next()) {
+				 Account sourceAccount = null ;
+				 Operation op = new Operation();
+				 if (res.getString("cs.TYPE").equals(Enum.valueOf(TYPE.class,"COURANT").name()) && res.getInt("cs.estValable")==1) {
+					 CurrentAccount tmp = new CurrentAccount();
+					 tmp.setId(res.getLong("cs.id"));
+					 sourceAccount= tmp;
+				 }
+				 else {
+					 SavingAccount tmp = new SavingAccount(); 
+					 tmp.setId(res.getLong("cs.id"));
+					 sourceAccount= tmp;
+				 }
+				 if (res.getString("op.type").equals("VER")) {
+					 op = new Operation(res.getLong("op.id"),Enum.valueOf(OperationType.class,"DEPOSIT_MONEY"),new Date(res.getTimestamp("op.dateExec").getTime()),sourceAccount);
+				 }
+				 else if (res.getString("op.type").equals("RET")) {
+					 op = new Operation(res.getLong("op.id"),Enum.valueOf(OperationType.class,"GET_MONEY"),new Date(res.getTimestamp("op.dateExec").getTime()),sourceAccount);
+				 }
+				 else {
+					 Account destinationAccount= new CurrentAccount();
+					 destinationAccount.setId(res.getLong("op.compteDestination"));
+					 op = new Operation(res.getLong("op.id"),Enum.valueOf(OperationType.class,"TRANSFER_MONEY"),new Date(res.getTimestamp("op.dateExec").getTime()),sourceAccount,destinationAccount);
+				 }
+				 L1.add(op);
+			 }
+			 return L1;
+		}
+		catch (Exception exc) {
+			 exc.printStackTrace();
+		 }
+			return null;
+	}
 	public static boolean addAccountMonney(long idAccount,double amount,double threshhold) {
 		String accType= threshhold == Account.THRESHOLD_CURRENT_ACCOUNT ? "COURANT" : "EPARGNE";
 		try  {
@@ -27,7 +68,18 @@ public class DaoAccountTable {
 			myStmt1.setString(5, accType);
 			int res1 = myStmt1.executeUpdate();
 			if(res1>0) 
-				return true ;
+			{
+				PreparedStatement myStmt2 = DBConnection.getPreparedStatement("insert into operation (type,dateExec,compteSource) values (?,?,?)");
+				if (amount >= 0) 
+					{myStmt2.setString(1,"VER");}
+				else 
+					{myStmt2.setString(1,"RET");}
+				myStmt2.setTimestamp(2,new java.sql.Timestamp(new java.util.Date().getTime()));
+				myStmt2.setLong(3,idAccount);
+				int resOp=myStmt2.executeUpdate();
+				if (resOp >0) return true ;
+				else return false ;
+			}
 			else 
 				return false;
 		}catch (Exception exc) {
@@ -55,7 +107,15 @@ public class DaoAccountTable {
 			int res2=myStmt2.executeUpdate();
 			if(res1>0 && res2>0 ) {
 				con.commit();
-				return true;
+				con.setAutoCommit(true);
+				PreparedStatement myStmt3 = DBConnection.getPreparedStatement("insert into operation (type,dateExec,compteSource,compteDestination) values (?,?,?,?)");
+				myStmt3.setString(1,"VIR");
+				myStmt3.setTimestamp(2,new java.sql.Timestamp(new java.util.Date().getTime()));
+				myStmt3.setLong(3,idSource);
+				myStmt3.setLong(4,idDestinataire);
+				int resOp = myStmt3.executeUpdate();
+				if (resOp>0) return true;
+				else return false ;
 			}
 			else 
 				return false;
@@ -69,6 +129,7 @@ public class DaoAccountTable {
 			 return false ;
 		 }
 	}
+	
 	@SuppressWarnings("finally")
 	public static Account getAccountById(String parametersList , Long id) {
 		StringBuilder sb = DBUtilities.prepareForSelectFullAccountDetails(parametersList);
@@ -168,8 +229,6 @@ public class DaoAccountTable {
 			 return null ;
 		}
 	}
-	
-	
 	public static boolean deleteAccount(long id) {
 		try {
 			PreparedStatement myStmt= DBConnection.getPreparedStatement("delete from compte where id=?");
@@ -183,5 +242,51 @@ public class DaoAccountTable {
 			 exc.printStackTrace();
 			 return false ;
 		 }
+	}
+	public static List<Account> getAllAccountsForOneClient(Long clientId) {
+		LinkedList<Account> L1 = new LinkedList<Account>();
+		StringBuilder sb = DBUtilities.prepareForSelectFullAccountDetails("*");
+		sb.append(" where a.client =  ?");
+		try {
+			PreparedStatement myStmt = DBConnection.getPreparedStatement(sb.toString());
+			   myStmt.setLong(1, clientId);
+			   ResultSet res= myStmt.executeQuery();
+			   while (res.next()) {
+				   Account account = null ;
+				   
+				   Address adresseClient = new Address(res.getLong("cl.address"));
+				   Person client = new Client(res.getInt("cl.cin"),res.getString("cl.email"),res.getString("cl.password")
+							,adresseClient,res.getString("cl.nom"),res.getString("cl.prenom"),res.getString("cl.tel"),new Date(res.getTimestamp("cl.dateNaiss").getTime())
+							,Enum.valueOf(CivilState.class, res.getString("cl.etatCivil")),Enum.valueOf(Sex.class,res.getString("cl.sex")));
+				   client.setId(res.getLong("cl.id"));
+		
+				   Address adresseCounter = new Address(res.getLong("g.address"));
+				   Person counter = new Counter(res.getInt("g.cin"),res.getString("g.email"),res.getString("g.password")
+							,adresseCounter,res.getString("g.nom"),res.getString("g.prenom"),res.getString("g.tel"),new Date(res.getTimestamp("g.dateNaiss").getTime())
+							,Enum.valueOf(CivilState.class, res.getString("g.etatCivil")),Enum.valueOf(Sex.class,res.getString("g.sex")),res.getDouble("g.salaire"),new Date(res.getTimestamp("g.dateEmbauche").getTime()),res.getLong("g.guichet"));
+				   counter.setId(res.getLong("g.id"));
+				   
+				   Card card = new Card(res.getLong("cd.numero"),res.getInt("cd.codeInternet"),res.getShort("cd.codeDab"),new Date(res.getTimestamp("cd.valableJusqua").getTime()));
+				   if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"COURANT").name()) && res.getInt("a.estValable")==1) {
+					   account = new CurrentAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
+							   ,res.getDouble("a.seuil"),client,counter,card);
+					   account.setId(res.getLong("a.id"));
+				   }
+				   else if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"EPARGNE").name()) && res.getInt("a.estValable")==1) {
+					   account = new SavingAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
+							   ,res.getDouble("a.seuil"),client,counter,card);
+					   account.setId(res.getLong("a.id"));
+				   }
+				   else {
+					   account = null;
+				   }
+				   L1.add(account);
+			   }
+			  return L1; 
+		}
+		catch (Exception exc) {
+			 exc.printStackTrace();
+		 }
+			return null;
 	}
 }

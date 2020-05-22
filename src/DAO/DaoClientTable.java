@@ -108,6 +108,28 @@ public class DaoClientTable {
 		
 	}
 	
-	
+	public static List<Client> getAllClients() {
+		LinkedList<Client> L1 = new LinkedList<Client>();
+		try {
+			PreparedStatement myStmt = DBConnection.getPreparedStatement("select p.*,a.* from personne p join adresse a on a.id=p.address where TYPE=?");
+			myStmt.setString(1, "CLIENT");
+			ResultSet res = myStmt.executeQuery();
+			while(res.next()) {
+				Address adresse = new Address(Enum.valueOf(Continent.class, res.getString("a.continent")),res.getString("a.pays"),res.getString("a.gouvernorat"),res.getString("a.ville")
+						   ,res.getString("a.rue"),res.getInt("a.codePostal"));
+				adresse.setId(res.getLong("a.id"));
+				Client C = new Client(res.getInt("p.cin"),res.getString("p.email"),res.getString("p.password")
+						,adresse,res.getString("p.nom"),res.getString("p.prenom"),res.getString("p.tel"),new Date(res.getTimestamp("p.dateNaiss").getTime())
+						,Enum.valueOf(CivilState.class, res.getString("p.etatCivil")),Enum.valueOf(Sex.class,res.getString("p.sex"))); 
+				C.setId(res.getLong("p.id"));
+				L1.add(C);
+			}
+			return L1;
+		}
+		catch (Exception exc) {
+			 exc.printStackTrace();
+			 
+		 }return null ;
+	}
 	
 }
