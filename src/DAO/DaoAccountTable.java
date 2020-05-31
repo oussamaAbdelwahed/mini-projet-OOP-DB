@@ -89,6 +89,52 @@ public class DaoAccountTable {
 	}
 	
 	
+	public static boolean retrieveAccountMonneyWithCard(long cardNumber,double amount,double threshhold) {
+		String accType= threshhold == Account.THRESHOLD_CURRENT_ACCOUNT ? "COURANT" : "EPARGNE";
+		try  {
+			PreparedStatement myStmt1 = DBConnection.getConnection().prepareStatement("update compte set solde=solde - ? where solde - ?>=? and carte=? and TYPE=?");
+			
+			myStmt1.setDouble(1, amount);
+			myStmt1.setDouble(2, amount);
+			myStmt1.setDouble(3, threshhold);
+			myStmt1.setLong(4, cardNumber);
+			myStmt1.setString(5, accType);
+			int res1 = myStmt1.executeUpdate();
+			
+			
+			PreparedStatement myStmt = DBConnection.getConnection().prepareStatement("SELECT co.id  FROM compte co JOIN carte ca ON co.carte = ca.numero AND ca.numero =?");
+			myStmt.setLong(1, cardNumber);
+			ResultSet resSet = myStmt.executeQuery() ;
+			
+			if(res1 >0 && resSet.next()) {
+				System.out.println("BENNE BENNE 1");
+			    Long idAccount = resSet.getLong("id");
+			    System.out.println("idAccoutn =======>"+idAccount);
+				PreparedStatement myStmt2 = DBConnection.getPreparedStatement("insert into operation (type,dateExec,compteSource) values (?,?,?)");
+				
+				myStmt2.setString(1,"RET");
+				myStmt2.setTimestamp(2,new java.sql.Timestamp(new java.util.Date().getTime()));
+				myStmt2.setLong(3,idAccount);
+				int resOp=myStmt2.executeUpdate();
+				if (resOp >0) {
+					System.out.println("BENNE BENNE 2");
+					return true ;
+				}else {
+					System.out.println("NOT BENNE BENNE 1");
+					return false ;
+				}
+			}else {
+				System.out.println("NOT BENNE BENNE 1");
+				return false;
+			}
+		}catch (Exception exc) {
+			System.out.println("NOT BENNE BENNE 3");
+			 exc.printStackTrace();
+			 return false ;
+		 }
+	}
+	
+	
 	public static boolean TransactionFromAccounts(long idSource,long idDestinataire,double amount,double threshhold) {
 		Connection con = DBConnection.getConnection();;
 		try {
@@ -171,13 +217,15 @@ public class DaoAccountTable {
 							   ,res.getDouble("a.seuil"),client,counter,card);
 					   account.setId(res.getLong("a.id"));
 					   account.setAvailable(res.getInt("a.estValable")==1 ? true  : false);
-				   }
+					   account.setClosingDate(new Date(res.getTimestamp("a.dateFermeture").getTime())); 
+				  }
 				   else if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"EPARGNE").name()) ) {//&& res.getInt("a.estValable")==1
 					   account = new SavingAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
 							   ,res.getDouble("a.seuil"),client,counter,card);
 					   account.setId(res.getLong("a.id"));
 					   account.setAvailable(res.getInt("a.estValable")==1 ? true  : false);
-				   }
+					   account.setClosingDate(new Date(res.getTimestamp("a.dateFermeture").getTime()));
+				  }
 				   else {
 					   account = null;
 				   }
@@ -271,11 +319,13 @@ public class DaoAccountTable {
 					   account = new CurrentAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
 							   ,res.getDouble("a.seuil"),client,counter,card);
 					   account.setId(res.getLong("a.id"));
+					   account.setClosingDate(new Date(res.getTimestamp("a.dateFermeture").getTime()));
 				   }
 				   else if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"EPARGNE").name()) && res.getInt("a.estValable")==1) {
 					   account = new SavingAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
 							   ,res.getDouble("a.seuil"),client,counter,card);
 					   account.setId(res.getLong("a.id"));
+					   account.setClosingDate(new Date(res.getTimestamp("a.dateFermeture").getTime()));
 				   }
 				   else {
 					   account = null;
@@ -289,4 +339,122 @@ public class DaoAccountTable {
 		 }
 			return null;
 	}
+	
+	
+	public static List<Account> getAllAccounts() {
+		LinkedList<Account> L1 = new LinkedList<Account>();
+		StringBuilder sb = DBUtilities.prepareForSelectFullAccountDetails("*");
+		
+		try {
+			  PreparedStatement myStmt = DBConnection.getPreparedStatement(sb.toString());
+			   ResultSet res= myStmt.executeQuery();
+			   while (res.next()) {
+				   Account account = null ;
+				   
+				   Address adresseClient = new Address(res.getLong("cl.address"));
+				   Person client = new Client(res.getInt("cl.cin"),res.getString("cl.email"),res.getString("cl.password")
+							,adresseClient,res.getString("cl.nom"),res.getString("cl.prenom"),res.getString("cl.tel"),new Date(res.getTimestamp("cl.dateNaiss").getTime())
+							,Enum.valueOf(CivilState.class, res.getString("cl.etatCivil")),Enum.valueOf(Sex.class,res.getString("cl.sex")));
+				   client.setId(res.getLong("cl.id"));
+		
+				   Address adresseCounter = new Address(res.getLong("g.address"));
+				   Person counter = new Counter(res.getInt("g.cin"),res.getString("g.email"),res.getString("g.password")
+							,adresseCounter,res.getString("g.nom"),res.getString("g.prenom"),res.getString("g.tel"),new Date(res.getTimestamp("g.dateNaiss").getTime())
+							,Enum.valueOf(CivilState.class, res.getString("g.etatCivil")),Enum.valueOf(Sex.class,res.getString("g.sex")),res.getDouble("g.salaire"),new Date(res.getTimestamp("g.dateEmbauche").getTime()),res.getLong("g.guichet"));
+				   counter.setId(res.getLong("g.id"));
+				   
+				   Card card = new Card(res.getLong("cd.numero"),res.getInt("cd.codeInternet"),res.getShort("cd.codeDab"),new Date(res.getTimestamp("cd.valableJusqua").getTime()));
+				   
+				   if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"COURANT").name()) && res.getInt("a.estValable")==1) {
+					   account = new CurrentAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
+							   ,res.getDouble("a.seuil"),client,counter,card);
+					   account.setId(res.getLong("a.id"));
+					   account.setClosingDate(new Date(res.getTimestamp("a.dateFermeture").getTime()));
+				   }
+				   else if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"EPARGNE").name()) && res.getInt("a.estValable")==1) {
+					   account = new SavingAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
+							   ,res.getDouble("a.seuil"),client,counter,card);
+					   account.setId(res.getLong("a.id"));
+					   account.setClosingDate(new Date(res.getTimestamp("a.dateFermeture").getTime()));
+				   }
+				   else {
+					   account = null;
+				   }
+				   L1.add(account);
+			   }
+			  return L1; 
+		}
+		catch (Exception exc) {
+			 exc.printStackTrace();
+		 }
+			return null;
+	}
+	
+	
+	@SuppressWarnings("finally")
+	public static Account getClientAccountById(String parametersList,Long clientId , Long id) {
+		StringBuilder sb = DBUtilities.prepareForSelectFullAccountDetails(parametersList);
+		sb.append(" where a.id =  ? AND client = ?");
+		Account account = null ;
+		try {
+			 Address adresseClient,adresseCounter = null;
+			 Person client,counter = null;
+			 Card card = null;
+			 PreparedStatement myStmt = DBConnection.getPreparedStatement(sb.toString());
+			   myStmt.setLong(1, id);
+			   myStmt.setLong(2, clientId);
+			   ResultSet res= myStmt.executeQuery();
+			   while (res.next()) {
+				    adresseClient = adresseCounter = null;
+				    client = counter = null;
+				    card = null;
+				   
+				   if(res.getLong("cl.id")>0) {
+				      adresseClient = new Address(res.getLong("cl.address"));
+				   
+				      client = new Client(res.getInt("cl.cin"),res.getString("cl.email"),res.getString("cl.password")
+							,adresseClient,res.getString("cl.nom"),res.getString("cl.prenom"),res.getString("cl.tel"),new Date(res.getTimestamp("cl.dateNaiss").getTime())
+							,Enum.valueOf(CivilState.class, res.getString("cl.etatCivil")),Enum.valueOf(Sex.class,res.getString("cl.sex")));
+				     client.setId(res.getLong("cl.id"));
+				   }
+				   if(res.getLong("g.id")>0) {
+				     adresseCounter = new Address(res.getLong("g.address"));
+				     counter = new Counter(res.getInt("g.cin"),res.getString("g.email"),res.getString("g.password")
+							,adresseCounter,res.getString("g.nom"),res.getString("g.prenom"),res.getString("g.tel"),new Date(res.getTimestamp("g.dateNaiss").getTime())
+							,Enum.valueOf(CivilState.class, res.getString("g.etatCivil")),Enum.valueOf(Sex.class,res.getString("g.sex")),res.getDouble("g.salaire"),new Date(res.getTimestamp("g.dateEmbauche").getTime()),res.getLong("g.guichet"));
+				    counter.setId(res.getLong("g.id"));
+				   }
+				   if(res.getLong("cd.numero")>0) {
+				    card = new Card(res.getLong("cd.numero"),res.getInt("cd.codeInternet"),res.getShort("cd.codeDab"),new Date(res.getTimestamp("cd.valableJusqua").getTime()));
+				   }
+				   
+				  if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"COURANT").name()) ) {//&& res.getInt("a.estValable")==1
+					   account = new CurrentAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
+							   ,res.getDouble("a.seuil"),client,counter,card);
+					   account.setId(res.getLong("a.id"));
+					   account.setAvailable(res.getInt("a.estValable")==1 ? true  : false);
+					   account.setClosingDate(new Date(res.getTimestamp("a.dateFermeture").getTime())); 
+				  }
+				   else if(res.getString("a.TYPE").equals(Enum.valueOf(TYPE.class,"EPARGNE").name()) ) {//&& res.getInt("a.estValable")==1
+					   account = new SavingAccount(res.getDouble("a.solde"),new Date(res.getTimestamp("a.dateCreation").getTime()),true
+							   ,res.getDouble("a.seuil"),client,counter,card);
+					   account.setId(res.getLong("a.id"));
+					   account.setAvailable(res.getInt("a.estValable")==1 ? true  : false);
+					   account.setClosingDate(new Date(res.getTimestamp("a.dateFermeture").getTime()));
+				  }
+				   else {
+					   account = null;
+				   }
+				   
+			   }
+		}
+		catch (Exception exc) {
+			 exc.printStackTrace();
+		 }
+		finally {
+				return account ;
+		}
+	}
+	
+	
 }

@@ -55,7 +55,7 @@
                         <Insets />
                      </HBox.margin>
                   </FontAwesomeIcon>
-                  <TextField fx:id="chercherCompte" prefHeight="29.0" prefWidth="220.0" promptText="chercher par num compte" style="-fx-background-color: transparent; -fx-text-inner-color: white;">
+                  <TextField fx:id="chercherCompte" onKeyPressed="#onChercherCompteKeyPress" prefHeight="29.0" prefWidth="220.0" promptText="chercher par num compte" style="-fx-background-color: transparent; -fx-text-inner-color: white;">
                      <font>
                         <Font size="15.0" />
                      </font>
@@ -78,7 +78,7 @@
                         <Insets />
                      </HBox.margin>
                   </FontAwesomeIcon>
-                  <Label prefHeight="20.0" prefWidth="132.0" text="Lister Comptes" textFill="#7c8184">
+                  <Label fx:id="listAccounts" prefHeight="20.0" prefWidth="132.0" text="Lister Comptes" textFill="#7c8184">
                      <font>
                         <Font name="Comfortaa Regular" size="15.0" />
                      </font>
@@ -106,27 +106,7 @@
                         <Insets />
                      </HBox.margin>
                   </FontAwesomeIcon>
-                  <Label prefHeight="20.0" prefWidth="132.0" text="Retirer argents" textFill="#7c8184">
-                     <font>
-                        <Font name="Comfortaa Regular" size="15.0" />
-                     </font>
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin>
-                  </Label>
-               </children>
-               <padding>
-                  <Insets left="10.0" />
-               </padding>
-            </HBox>
-            <HBox fx:id="virement" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onVirementClick" prefHeight="40.0" prefWidth="300.0" styleClass="btns">
-               <children>
-                  <FontAwesomeIcon glyphStyle="-fx-fill:#FED350" glyphStyleClass="" iconName="PAPER_PLANE" size="1.3em">
-                     <HBox.margin>
-                        <Insets />
-                     </HBox.margin>
-                  </FontAwesomeIcon>
-                  <Label prefHeight="20.0" prefWidth="132.0" text="Virement" textFill="#7f8184">
+                  <Label fx:id="retirerArgent" prefHeight="20.0" prefWidth="132.0" text="Retirer argents" textFill="#7c8184">
                      <font>
                         <Font name="Comfortaa Regular" size="15.0" />
                      </font>
@@ -201,7 +181,7 @@
                   </HBox>
                </children>
             </Pane>
-            <ScrollPane fx:id="displayTarget" hbarPolicy="NEVER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="714.0" prefWidth="1001.0" style="-fx-background-color: white;" />
+            <ScrollPane fx:id="displayTarget" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="714.0" prefWidth="1001.0" style="-fx-background-color: white;" />
          </children></VBox>
    </children>
 </AnchorPane>

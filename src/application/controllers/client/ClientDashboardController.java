@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import application.controllers.DashboardInterface;
+import application.controllers.client.ShowAccountController;
 import application.helpers.FxmlLoader;
 import entities.Client;
 import entities.Person;
@@ -27,7 +28,7 @@ import javafx.stage.Stage;
 
 public class ClientDashboardController implements Initializable,DashboardInterface {
 	    @FXML
-	    HBox ouvrirCompte,listerComptes,fermerCompte;
+	    HBox ouvrirCompte;
 	    
 	    @FXML
 	    HBox profile,deconnexion;
@@ -55,54 +56,68 @@ public class ClientDashboardController implements Initializable,DashboardInterfa
 	    	
 	    }
 	    
-	    public void onOuvrirCompteClick(MouseEvent event) throws IOException {
-	    	FXMLLoader l= loader.getPage("account/openAccount");
-			Pane p = l.load();
-	    	
-	    	displayTarget.setContent(p);
-	    	diplayTargetHeaderTitle.setText("Ouvrir un nouveau compte");
-	    }
+	
 	    
 	    public void onListerComptesClick(MouseEvent event) throws IOException {
-	    	FXMLLoader l= loader.getPage("account/listAccounts");
+	    	FXMLLoader l= loader.getPage("client/listClientAccounts");
 			Pane p = l.load();
+			
+			ListAccountsForClientController c =l.getController();
+			c.setClientId(this.client.getId());
 	    	
 	    	displayTarget.setContent(p);
 	    	diplayTargetHeaderTitle.setText("Lister les comptes");
 	    }
-	    
-	    public void onFermerCompteClick(MouseEvent event) throws IOException {
-	    	FXMLLoader l= loader.getPage("account/closeAccount");
-			Pane p = l.load();
-	  
-	    	displayTarget.setContent(p);
-	    	diplayTargetHeaderTitle.setText("Fermer un compte");
-	    }
-	    
+
 	
 	    public void onChercherCompteKeyPress(KeyEvent event) throws IOException {
 	    	if (event.getCode() == KeyCode.ENTER) {
-	    		FXMLLoader l= loader.getPage("account/showAccount");
-	   		    Pane p = l.load();
+	    		String input = chercherCompte.getText();
+	    		if(input!=null && !input.equals("")) {
+	    		  FXMLLoader l= loader.getPage("client/showAccount");
+	   		      Pane p = l.load();
+	   		      
+	   		      ShowAccountController c = l.getController();
+	   		      c.setClientId(this.client.getId());
+	   		      Long id=null;
+	   		      
+	   		      try {
+	    		   id = Long.parseLong(input);
+	    		  }catch(NumberFormatException e) {
+	    			 e.printStackTrace();
+	    		  }finally {
+	    			 c.setAccountId(id);
+	    		  }
 	    	  
-	        	displayTarget.setContent(p);
-	        	diplayTargetHeaderTitle.setText("Informations du compte");
+	        	  displayTarget.setContent(p);
+	        	  diplayTargetHeaderTitle.setText("Informations du compte");
+	    		}
 	    	}
+	    	
+	    	/*
+	    	 * 
+	    	 *   	if (event.getCode() == KeyCode.ENTER) {
+    		String input = chercherCompte.getText();
+    		if(input!=null && !input.equals("")) {
+    		  FXMLLoader l= loader.getPage("account/showAccount");
+   		      Pane p = l.load();
+   		      ShowAccountController c = l.getController();
+   		      Long id=null;
+   		      
+   		      try {
+    		   id = Long.parseLong(input);
+    		  }catch(NumberFormatException e) {
+    			 e.printStackTrace();
+    		  }finally {
+    			 c.setAccountId(id);
+    		  }
+        	  displayTarget.setContent(p);
+        	  diplayTargetHeaderTitle.setText("Informations du compte");
+    		}
+    	}*/
 	    }
 	    
-	    
-	    public void onDeposerArgentClick(MouseEvent event) throws IOException {
-	       System.out.println("depo");
-	    }
-	    
-	    public void onRetirerArgentClick(MouseEvent event) throws IOException {
-	       System.out.println("retrait");
-	    }
-	    
-	    public void onVirementClick(MouseEvent event) throws IOException {
-	       System.out.println("virement");
-	    }
-	    
+
 	    
 	    public void onProfileClick(MouseEvent event) throws IOException {
 	    	FXMLLoader l= loader.getPage("editProfile");
@@ -112,7 +127,13 @@ public class ClientDashboardController implements Initializable,DashboardInterfa
 	    	diplayTargetHeaderTitle.setText("Modifier le profile");
 	    }
 	    
-	   
+	   public void onRetirerArgentClick(MouseEvent event) throws IOException {
+		    FXMLLoader l= loader.getPage("client/retrieveMoney");
+			Pane p = l.load();
+	    
+	    	displayTarget.setContent(p);
+	    	diplayTargetHeaderTitle.setText("Retirer de l'argent");
+	   }
 	    
 	    public void onDeconnexionClick(MouseEvent event) {
 	    	 ((Node) (event.getSource())).getScene().getWindow().hide();

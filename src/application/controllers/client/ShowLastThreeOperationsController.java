@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import DAO.DaoAccountTable;
 import entities.Account;
 import entities.CurrentAccount;
 import entities.Operation;
@@ -17,7 +18,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
-public class ShowLastThreeOperations  implements Initializable {
+public class ShowLastThreeOperationsController  implements Initializable {
 	@FXML
 	private Text title1,title2,title3,message;
 	
@@ -55,21 +56,22 @@ public class ShowLastThreeOperations  implements Initializable {
 		op3.setOpType(OperationType.GET_MONEY);
 		op3.setExecDate(new Date());
 		
+		List<Operation> ops = DaoAccountTable.getLastThreeOperationForAccount(this.accountId);
 		//res.add(op1);
 		//res.add(op2);
 		//res.add(op3);
 		//logiquement le travail prec est unécessaire si on avait un linkedlist déja rempli
-		if(res.size()==0) {
+		if(ops.size()==0) {
 			message.setVisible(true);
-		}else if(res.size()==1) {
-			showOpOne(res);
-		}else if(res.size()==2) {
-			showOpOne(res);
-			showOpTwo(res);
+		}else if(ops.size()==1) {
+			showOpOne(ops);
+		}else if(ops.size()==2) {
+			showOpOne(ops);
+			showOpTwo(ops);
 		}else {
-			showOpOne(res);
-			showOpTwo(res);
-			showOpThree(res);
+			showOpOne(ops);
+			showOpTwo(ops);
+			showOpThree(ops);
 		}
 	}
 	
@@ -83,7 +85,7 @@ public class ShowLastThreeOperations  implements Initializable {
 		String d = dateFormat.format(op.getExecDate()).toString();
 		dateExec1.setText(d);
 		cptSrc1.setText(op.getSourceAccount().getId()+"");
-		cptDest1.setText(op.getDestAccount().getId() == op.getSourceAccount().getId() ? " non specifié " :op.getDestAccount().getId()+"" );
+		cptDest1.setText(op.getDestAccount() == null ? " non specifié " :op.getDestAccount().getId()+"" );
 		type1.setText(op.getOpType().toString());
 	}
 	
@@ -96,7 +98,7 @@ public class ShowLastThreeOperations  implements Initializable {
 			String d = dateFormat.format(op.getExecDate()).toString();
 			dateExec2.setText(d);
 			cptSrc2.setText(op.getSourceAccount().getId()+"");
-			cptDest2.setText(op.getDestAccount().getId() == op.getSourceAccount().getId() ? " non specifié " :op.getDestAccount().getId()+"" );
+			cptDest2.setText(op.getDestAccount() == null ? " non specifié " :op.getDestAccount().getId()+"" );
 			type2.setText(op.getOpType().toString());
 	}
 	
@@ -111,7 +113,7 @@ public class ShowLastThreeOperations  implements Initializable {
 		   String d = dateFormat.format(op.getExecDate()).toString();
 		   dateExec3.setText(d);
 		   cptSrc3.setText(op.getSourceAccount().getId()+"");
-		   cptDest3.setText(op.getDestAccount().getId() == op.getSourceAccount().getId() ? " non specifié " :op.getDestAccount().getId()+"" );
+		   cptDest3.setText(op.getDestAccount()== null ? " non specifié " :op.getDestAccount().getId()+"" );
 		   type3.setText(op.getOpType().toString());
 	}
 	

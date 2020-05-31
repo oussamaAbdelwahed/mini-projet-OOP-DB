@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="1155.0" prefWidth="1001.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.client.ShowLastThreeOperations">
+<AnchorPane id="AnchorPane" prefHeight="1155.0" prefWidth="1001.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.controllers.client.ShowLastThreeOperationsController">
    <children>
       <GridPane fx:id="gridPane1" layoutX="202.0" layoutY="191.0" prefHeight="263.0" prefWidth="581.0" style="-fx-border-color: black; -fx-background-color: #ecf0f1;" visible="false">
          <children>

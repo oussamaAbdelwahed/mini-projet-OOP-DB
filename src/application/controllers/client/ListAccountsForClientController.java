@@ -1,25 +1,18 @@
-package application.controllers.account;
+package application.controllers.client;
 
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 import DAO.DaoAccountTable;
-import application.controllers.client.ClientInterface;
 import application.controllers.counter.AccountInterface;
 import entities.Account;
-import entities.Address;
 import entities.Client;
 import entities.Counter;
 import entities.CurrentAccount;
 import entities.Person;
-import entities_enums.CivilState;
-import entities_enums.Continent;
-import entities_enums.Sex;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -32,7 +25,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-public class ListAccountsController implements Initializable{
+public class ListAccountsForClientController implements Initializable{
 	@FXML
     private Label label;
     @FXML private TextField filterField;
@@ -47,12 +40,13 @@ public class ListAccountsController implements Initializable{
     @FXML private TableColumn<AccountInterface, String> closingDate;
     @FXML private TableColumn<AccountInterface, String> owner;
     @FXML private TableColumn<AccountInterface, String> createdBy;
-            
+    private Long clientId;
+    
     //observalble list to store data
     private final ObservableList<AccountInterface> dataList = FXCollections.observableArrayList();
     
-    @Override
-    public void initialize(URL url, ResourceBundle rb) {      
+    public void setClientId(Long id) {
+    	this.clientId = id;
         //we must create a ClientInterface filled with client entities class with attributes like this  this.EmpID = new SimpleIntegerProperty(id);           
        // EmpID.setCellValueFactory(new PropertyValueFactory<>("EmpID"));       
     	type.setCellValueFactory(new PropertyValueFactory<>("type"));        
@@ -65,8 +59,8 @@ public class ListAccountsController implements Initializable{
     	closingDate.setCellValueFactory(new PropertyValueFactory<>("closingDate"));
     	owner.setCellValueFactory(new PropertyValueFactory<>("owner"));
     	createdBy.setCellValueFactory(new PropertyValueFactory<>("createdBy"));
-    	
-    	List<Account> res1 = DaoAccountTable.getAllAccounts();
+
+    	List<Account> res1 = DaoAccountTable.getAllAccountsForOneClient(this.clientId);
 
     	List<AccountInterface> resFinal = new LinkedList<>();
     	for(int i=0;i<res1.size();i++) {
@@ -110,5 +104,13 @@ public class ListAccountsController implements Initializable{
 		
 		// 5. Add sorted (and filtered) data to the table.
 		tableview.setItems(sortedData);
+    }
+            
+
+    
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {      
+
     } 
+
 }

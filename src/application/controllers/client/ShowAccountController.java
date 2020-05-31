@@ -1,4 +1,4 @@
-package application.controllers.counter;
+package application.controllers.client;
 
 import java.io.IOException;
 import java.net.URL;
@@ -39,7 +39,7 @@ public class ShowAccountController implements Initializable {
 	@FXML
 	private HBox  btnsContainer;
 	
-	private Long accountId;
+	private Long accountId,clientId;
 	
 	@FXML
 	private AnchorPane parentOne;
@@ -49,7 +49,8 @@ public class ShowAccountController implements Initializable {
 		gridPane.setVisible(true);
 		errorMessage.setVisible(false);
 		System.out.println("ACCOUNT ID =======> "+id );
-		Account c = DaoAccountTable.getAccountById("*", id);
+		this.accountId = id;
+		Account c = DaoAccountTable.getClientAccountById("*", this.clientId,this.accountId);
 		if(c==null) {
 			btnsContainer.setVisible(false);
 			gridPane.setVisible(false);
@@ -82,6 +83,10 @@ public class ShowAccountController implements Initializable {
 		this.accountId = id;
 	}
 	
+	public void setClientId(Long id) {
+		this.clientId = id;
+	}
+	
 	public void onShowLastOperationsBtnClicked(MouseEvent event) {
 		FXMLLoader loader = new FxmlLoader().getPage("client/showLastThreeOperations");
 		try {
@@ -103,20 +108,6 @@ public class ShowAccountController implements Initializable {
 		}
 	}
 	
-
-	public void onDeleteBtnClicked(MouseEvent e) {
-		message.setVisible(false);
-	   boolean res = DaoAccountTable.deleteAccount(this.accountId);
-	   message.setVisible(true);
-	   if(res) {
-		   btnsContainer.setVisible(false);
-		   gridPane.setVisible(false);
-		   message.setText("compte supprimé avec success!");
-	   }else {
-		   message.setText("un erreur est survenu, ressayez plus tard !");
-	   }
-	}
-
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 	

@@ -2,8 +2,10 @@ package application.controllers.client;
 import java.net.URL;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import DAO.DaoClientTable;
 import entities.Address;
 import entities.Client;
 import entities_enums.CivilState;
@@ -88,11 +90,15 @@ public class ListClientsController implements Initializable {
         
         ClientInterface ci1 = new ClientInterface(emp1);ClientInterface ci2 = new ClientInterface(emp2);
         ClientInterface ci3 = new ClientInterface(emp3);ClientInterface ci4 = new ClientInterface(emp4);
-        dataList.addAll(ci1,ci2, ci3, ci4);
+        List<Client> res1 = DaoClientTable.getAllClients();
+        List<ClientInterface> resFinal = new LinkedList<>();
         
-        //real world scenario ==> oussama
-       // dataList.addAll(new LinkedList<ClientInterface>());
-        
+        for(int i=0;i<res1.size();i++) {
+        	resFinal.add(new ClientInterface(res1.get(i)));
+        }
+      //  dataList.addAll(ci1,ci2, ci3, ci4);
+        dataList.addAll(resFinal);
+ 
         // Wrap the ObservableList in a FilteredList (initially display all data).
         FilteredList<ClientInterface> filteredData = new FilteredList<>(dataList, b -> true);
 		
