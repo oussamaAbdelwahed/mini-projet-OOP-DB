@@ -60,7 +60,7 @@ public class DaoAccountTable {
 	public static boolean addAccountMonney(long idAccount,double amount,double threshhold) {
 		String accType= threshhold == Account.THRESHOLD_CURRENT_ACCOUNT ? "COURANT" : "EPARGNE";
 		try  {
-			PreparedStatement myStmt1 = DBConnection.getPreparedStatement("update compte set solde=solde+? where solde+?>=? and id=? where TYPE=?");
+			PreparedStatement myStmt1 = DBConnection.getPreparedStatement("update compte set solde=solde+? where solde+?>=? and id=? and TYPE=?");
 			myStmt1.setDouble(1, amount);
 			myStmt1.setDouble(2, amount);
 			myStmt1.setDouble(3, threshhold);

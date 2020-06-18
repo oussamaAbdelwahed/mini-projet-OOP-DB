@@ -179,6 +179,7 @@ public class UpdatePersonCredentialsController implements Initializable {
 		this.p = DaoPersonTable.getPersonById("*", userId);
 		
 		if(p!=null) {
+			System.out.println("ADRE ID "+p.getAddress().getId());
 			nom.setText(p.getFirstname());
 			prenom.setText(p.getLastname());
 			cin.setText(String.valueOf(p.getCin()));
@@ -252,6 +253,7 @@ public class UpdatePersonCredentialsController implements Initializable {
 	     adr.setState((String) etatSelect.getSelectionModel().getSelectedItem());
 		 adr.setCountry(paysVal);adr.setCity(villeVal);
 		 adr.setState(rueVal);adr.setZipCode(codePostaleVal);
+		 p.setAddress(adr);
 		 if(p instanceof Client) {
 			 Client cli = (Client)p;
 			 p = cli.updateEntities();

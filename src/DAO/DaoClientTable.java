@@ -52,7 +52,7 @@ public class DaoClientTable {
 			int res3 = myStmt3.executeUpdate();
 			long cardId= DBConnection.getKey(myStmt3);
 			//Adding Account 
-			PreparedStatement myStmt4 = DBConnection.getPreparedStatementWithReturnedKey("insert into compte (solde,dateCreation,seuil,estValable,TYPE,client,guichetier,carte) values (?,?,?,?,?,?,?,?)");
+			PreparedStatement myStmt4 = DBConnection.getPreparedStatementWithReturnedKey("insert into compte (solde,dateCreation,seuil,estValable,TYPE,client,guichetier,carte,dateFermeture) values (?,?,?,?,?,?,?,?,?)");
 			myStmt4.setDouble(1,compte.getMoney());
 			myStmt4.setTimestamp(2,new java.sql.Timestamp(new java.util.Date().getTime()));
 			myStmt4.setDouble(3,compte.getThreshold());
@@ -67,6 +67,7 @@ public class DaoClientTable {
 			myStmt4.setLong(6,clientId);
 			myStmt4.setLong(7,counterId);
 			myStmt4.setLong(8,cardId);
+			myStmt4.setTimestamp(9,new java.sql.Timestamp(compte.getClosingDate().getTime()));
 			int res4 = myStmt4.executeUpdate();
 			long compteId = DBConnection.getKey(myStmt4);
 			if(res1>0 && res2>0 && res3>0 && res4>0) {

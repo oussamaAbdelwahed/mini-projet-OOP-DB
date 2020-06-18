@@ -58,12 +58,14 @@ public class DaoPersonTable {
 							,adresse,res.getString("nom"),res.getString("prenom"),res.getString("tel"),new Date(res.getTimestamp("dateNaiss").getTime())
 							,Enum.valueOf(CivilState.class, res.getString("etatCivil")),Enum.valueOf(Sex.class,res.getString("sex")),res.getDouble("salaire"),new Date(res.getTimestamp("dateEmbauche").getTime()),res.getLong("guichet"));
 					 p.setId(res.getLong("id"));
+					 adresse.setId(res.getLong("address"));
 				}
 				else {
 					p = new Client(res.getInt("cin"),res.getString("email"),res.getString("password")
 							,adresse,res.getString("nom"),res.getString("prenom"),res.getString("tel"),new Date(res.getTimestamp("dateNaiss").getTime())
 							,Enum.valueOf(CivilState.class, res.getString("etatCivil")),Enum.valueOf(Sex.class,res.getString("sex"))); 
 					p.setId(res.getLong("id"));
+					 adresse.setId(res.getLong("address"));
 				}	
 		 }
 		 }
@@ -85,7 +87,7 @@ public class DaoPersonTable {
 		try {
 			if (person instanceof Client) {
 			 Client C = (Client)person;
-			 myUpdateStmt =  DBConnection.getPreparedStatement("update personne set email= ?,password= ?,cin= ?,nom= ?,prenom= ?,dateNaiss=?,"
+			 myUpdateStmt =  DBConnection.getPreparedStatement("update personne set email= ?,password= ?,cin= ?,nom= ?,prenom= ?,dateNaiss= ?,"
 						+ "tel= ?,sex= ?,etatCivil= ? where id=?");
 			 myUpdateStmt.setString(1,C.getEmail());
 			 myUpdateStmt.setString(2,C.getPassword());
@@ -98,8 +100,7 @@ public class DaoPersonTable {
 			 myUpdateStmt.setString(9,C.getCivilState().name());
 			 myUpdateStmt.setLong(10,C.getId());
 			 int res = myUpdateStmt.executeUpdate();
-			 myUpdateStmtforadresse=DBConnection.getPreparedStatement("update adresse set continent= ?,pays= ?,gouvernorat= ?,ville= ?,rue= ?,codePostal=?,"
-						+ "where id=?");
+			 myUpdateStmtforadresse=DBConnection.getPreparedStatement("update adresse set continent= ?,pays= ?,gouvernorat= ?,ville= ?,rue= ?,codePostal= ?  where id=?");
 			 myUpdateStmtforadresse.setString(1, C.getAddress().getContinent().name());
 			 myUpdateStmtforadresse.setString(2, C.getAddress().getCountry());
 			 myUpdateStmtforadresse.setString(3, C.getAddress().getState());
@@ -114,8 +115,8 @@ public class DaoPersonTable {
 			}
 			else {
 				Counter G=(Counter)person ;
-				myUpdateStmt =  DBConnection.getPreparedStatement("update personne set email= ?,password= ?,cin= ?,nom= ?,prenom= ?,dateNaiss=?,"
-						+ "tel= ?,sex= ?,etatCivil= ?,salaire=?,dateEmbauche=? where id=?");
+				myUpdateStmt =  DBConnection.getPreparedStatement("update personne set email= ?,password= ?,cin= ?,nom= ?,prenom= ?,dateNaiss= ?,"
+						+ "tel= ?,sex= ?,etatCivil= ?,salaire= ?,dateEmbauche= ? where id=?");
 				myUpdateStmt.setString(1,G.getEmail());
 				 myUpdateStmt.setString(2,G.getPassword());
 				 myUpdateStmt.setInt(3,G.getCin());
@@ -129,8 +130,8 @@ public class DaoPersonTable {
 				 myUpdateStmt.setTimestamp(11,new java.sql.Timestamp(G.getHiringDate().getTime()));
 				 myUpdateStmt.setLong(12,G.getId());
 				 int res = myUpdateStmt.executeUpdate();
-				 myUpdateStmtforadresse=DBConnection.getPreparedStatement("update adresse set continent= ?,pays= ?,gouvernorat= ?,ville= ?,rue= ?,codePostal=?,"
-							+ "where id=?");
+				 myUpdateStmtforadresse=DBConnection.getPreparedStatement("update adresse set continent= ?,pays= ?,gouvernorat= ?,ville= ?,rue= ?,codePostal= ?"
+							+ " where id=?");
 				 myUpdateStmtforadresse.setString(1, G.getAddress().getContinent().name());
 				 myUpdateStmtforadresse.setString(2, G.getAddress().getCountry());
 				 myUpdateStmtforadresse.setString(3, G.getAddress().getState());
@@ -146,6 +147,7 @@ public class DaoPersonTable {
 		}
 		catch (Exception exc) {
 			 exc.printStackTrace();
+			 System.out.println("EXECPTION EEEEE");
 			 return null;
 		 }	
 		finally {
