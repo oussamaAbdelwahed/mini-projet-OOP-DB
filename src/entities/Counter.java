@@ -2,14 +2,40 @@ package entities;
 
 import java.util.Date;
 
-//l entite Guichetier
-public class Counter extends Person{
+import DAO.DaoAccountTable;
+import DAO.DaoClientTable;
+import DAO.DaoPersonTable;
+import entities_enums.CivilState;
+import entities_enums.Sex;
+//l'entite Guichetier
+public class Counter extends Person {
 	private double salary;
 	private Date hiringDate;
+	private long window ;
 	private static int countersNbr;
 	
 	public Counter() {super();}
-
+	public Counter(String email,String password) {
+		super(email,password);
+	}
+	public Counter(int cin,String email,String password,String last_name,String first_name,String tel,Date birthdate,CivilState civilState,Sex sex,double salary,Date hiringDate,long window) {
+		super(cin,email,password,last_name,first_name,tel,birthdate,civilState,sex);
+		this.salary=salary;
+		this.hiringDate=hiringDate;
+		this.window=window;
+	}
+	public Counter(int cin,String email,String password,Address address,String last_name,String first_name,String tel,Date birthdate,CivilState civilState,Sex sex,double salary,Date hiringDate,long window) {
+		super(cin,email,password,address,last_name,first_name,tel,birthdate,civilState,sex);
+		this.salary=salary;
+		this.hiringDate=hiringDate;
+		this.window=window;
+	}
+	public long getWindow() {
+		return this.window;
+	}
+	public void setWindow(long window) {
+		this.window=window;
+	}
 	public double getSalary() {
 		return salary;
 	}
@@ -42,13 +68,27 @@ public class Counter extends Person{
 		return true;
 	}
 	
-	public boolean openAccount(Account c) {
-		return true;
+	// DAO FUNCTIONS:
+	
+	public Client insertClientIntoDatabase(Client c,Account cmpt) {
+		return DaoClientTable.insertClient(c,cmpt,this.getId());
 	}
-	
-	public boolean closeAccount(Account c) {
-		return true;
+	public boolean deleteClientFromDatabase(Long Id) {
+		return DaoClientTable.DeleteClient(Id);
 	}
-	
-	
+	public boolean addAccountMonneyForClient(long idAccount,double amount,double threshhold) {
+		return DaoAccountTable.addAccountMonney(idAccount, amount, threshhold);
+	}
+	public boolean TransactionBeetweenAccounts(long idSource,long idDestinataire, double amount,double threshhold) {
+		return DaoAccountTable.TransactionFromAccounts(idSource, idDestinataire, amount, threshhold);
+	}
+	public Counter updateEntities() {
+		 return (Counter)DaoPersonTable.updatePersonDatabase(this);
+	}
+	public Account openAccount(Account c) {
+		return DaoAccountTable.InsertAccountSeperatly(c);
+	}
+	public boolean closeAccount(Long Id) {
+		return DaoAccountTable.deleteAccount(Id);
+	}
 }

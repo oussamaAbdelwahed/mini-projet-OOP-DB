@@ -16,9 +16,25 @@ public abstract class Account {
    private Person createdBy;
    private Card card;
    private List<Operation> operations = new LinkedList<>();
+   public static final double THRESHOLD_CURRENT_ACCOUNT=50;
+   public static final double THRESHOLD_SAVING_ACCOUNT=200;
    
    public Account() {}
-   
+   public Account(double money,Date openingDate,boolean isAvailable,double threshold,Person owner,Person createdBy,Card card) {
+	   this.money=money;
+	   this.openingDate=openingDate;
+	   this.isAvailable=isAvailable;
+	   this.threshold=threshold;
+	   this.owner=owner;
+	   this.createdBy=createdBy;
+	   this.card=card;
+   }
+   public Account(double money,double threshold,Card card) {
+	   this.money=money;
+	   this.isAvailable=true;
+	   this.threshold=threshold;
+	   this.card=card;
+   }
    public boolean depositMoney(double money) {
 	   return true;
    }
